@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PlayCircle, CheckCircle, XCircle, RotateCcw, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import {
   buildBaseline,
   buildOptimalSolution,
@@ -21,7 +21,6 @@ export default function TestRunner({ currentStops = INITIAL_STOPS }) {
     try {
       const baseline = buildBaseline(INITIAL_STOPS);
       const assignedIds = baseline.metrics.assignedStopIds;
-      const initialIds = INITIAL_STOPS.map(s => s.stop_id);
       const passed =
         baseline.isValid &&
         assignedIds.length === 6 &&
@@ -251,7 +250,6 @@ export default function TestRunner({ currentStops = INITIAL_STOPS }) {
     setTestResults(results);
   };
 
-  // Run on mount if null
   React.useEffect(() => {
     runAllTests();
   }, [currentStops]);
@@ -260,72 +258,70 @@ export default function TestRunner({ currentStops = INITIAL_STOPS }) {
   const failedCount = (testResults?.length || 0) - passedCount;
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs mb-8">
+    <div className="border border-[#DAD6CC] bg-[#FFFEFA] p-6 mb-8 font-mono">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200">
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[#DAD6CC]">
         <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-lg font-bold text-slate-900">Built-in Acceptance Test Harness</h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
-              Live Engine Verification
-            </span>
+          <div className="text-xs uppercase tracking-widest text-[#C65332] font-semibold mb-0.5">
+            VERIFICATION / ACCEPTANCE CRITERIA
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Executes all 12 H04 competition acceptance criteria against the live in-browser pure JavaScript engine.
+          <h2 className="text-2xl font-bold tracking-tight text-[#242520] font-sans">
+            Acceptance Test Suite
+          </h2>
+          <p className="text-xs text-[#77766F] mt-0.5">
+            Live evaluation of all 12 H04 competition criteria directly against pure calculation functions.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <div className="flex items-center space-x-2 text-xs">
-            <span className="px-2.5 py-1 rounded-md bg-emerald-100 text-emerald-800 font-bold">
-              {passedCount} Passed
+            <span className="px-2.5 py-1 border border-[#287653] bg-[#EAE6DC] text-[#287653] font-bold">
+              {passedCount} / {testResults?.length || 12} Passed
             </span>
-            <span className={`px-2.5 py-1 rounded-md font-bold ${
-              failedCount > 0 ? 'bg-red-100 text-red-800' : 'bg-slate-100 text-slate-500'
-            }`}>
-              {failedCount} Failed
-            </span>
+            {failedCount > 0 && (
+              <span className="px-2.5 py-1 border border-[#B83C32] bg-[#FCECEB] text-[#B83C32] font-bold">
+                {failedCount} Failed
+              </span>
+            )}
           </div>
           <button
             onClick={runAllTests}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white hover:bg-indigo-500 shadow-xs active:scale-95 transition-all"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#242520] hover:bg-[#353630] text-[#FFFEFA] text-xs font-bold uppercase tracking-wider"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>Re-run All Tests</span>
+            <span>Run All Tests</span>
           </button>
         </div>
       </div>
 
-      {/* Test Table */}
-      <div className="mt-4 overflow-x-auto border border-slate-200 rounded-lg">
+      {/* Tests Table */}
+      <div className="mt-4 overflow-x-auto border border-[#DAD6CC]">
         <table className="w-full text-left text-xs">
-          <thead className="bg-slate-100 text-slate-600 uppercase font-semibold border-b border-slate-200">
+          <thead className="bg-[#F5F2EB] text-[#77766F] uppercase border-b border-[#DAD6CC]">
             <tr>
-              <th className="p-3 w-16 text-center">Status</th>
+              <th className="p-3 w-20 text-center">Status</th>
               <th className="p-3 w-56">Test Name</th>
               <th className="p-3">Expected Result</th>
               <th className="p-3">Actual Observed Output</th>
-              <th className="p-3">Verification Details</th>
+              <th className="p-3">Details</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 font-sans">
+          <tbody className="divide-y divide-[#DAD6CC]">
             {testResults?.map((test) => (
-              <tr key={test.id} className={test.passed ? 'hover:bg-slate-50' : 'bg-red-50/40'}>
+              <tr key={test.id} className={test.passed ? 'hover:bg-[#F5F2EB]/50' : 'bg-[#FCECEB]'}>
                 <td className="p-3 text-center">
-                  {test.passed ? (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-2xs font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                      PASS
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-2xs font-extrabold bg-red-100 text-red-800 border border-red-300">
-                      FAIL
-                    </span>
-                  )}
+                  <span className={`inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border ${
+                    test.passed
+                      ? 'border-[#287653] bg-[#EAE6DC] text-[#287653]'
+                      : 'border-[#B83C32] bg-[#B83C32] text-[#FFFEFA]'
+                  }`}>
+                    {test.passed ? 'PASS' : 'FAIL'}
+                  </span>
                 </td>
-                <td className="p-3 font-bold text-slate-900">{test.name}</td>
-                <td className="p-3 font-mono text-2xs text-slate-700">{test.expected}</td>
-                <td className="p-3 font-mono text-2xs font-bold text-slate-900">{test.observed}</td>
-                <td className="p-3 text-2xs text-slate-500">{test.details}</td>
+                <td className="p-3 font-bold text-[#242520]">{test.name}</td>
+                <td className="p-3 text-[11px] text-[#77766F]">{test.expected}</td>
+                <td className="p-3 text-[11px] font-bold text-[#242520]">{test.observed}</td>
+                <td className="p-3 text-[11px] text-[#77766F]">{test.details}</td>
               </tr>
             ))}
           </tbody>

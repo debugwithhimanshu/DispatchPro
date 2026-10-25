@@ -1,110 +1,136 @@
 import React from 'react';
-import { HelpCircle, AlertTriangle } from 'lucide-react';
 
-export default function StopTimeline({ strategyData }) {
+export default function StopTimeline({ strategyData, selectedStrategyName }) {
   const routes = strategyData?.routes || [];
   const unassigned = strategyData?.metrics?.unassignedStops || [];
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4 mb-6 shadow-sm">
-      <div className="mb-4">
-        <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-          <HelpCircle className="w-4 h-4 text-indigo-600" />
-          Why This Route?
-        </h3>
-        <p className="text-xs text-slate-400 mt-0.5">
-          Step-by-step travel times, waiting buffers, service windows, and assignment rationale.
+    <section className="mb-8 border border-[#DAD6CC] bg-[#FFFEFA] p-5">
+      {/* Section Header */}
+      <div className="pb-3 mb-4 border-b border-[#DAD6CC]">
+        <div className="text-xs font-mono uppercase tracking-widest text-[#C65332] font-semibold mb-0.5">
+          04 / DECISION LOGIC & TIMELINE
+        </div>
+        <h2 className="text-xl font-bold tracking-tight text-[#242520]">
+          Why this route?
+        </h2>
+        <p className="text-xs font-mono text-[#77766F] mt-0.5">
+          Step-by-step audit of travel times, waiting buffers, service windows, and dead-end returns for <strong className="text-[#242520]">{selectedStrategyName}</strong>.
         </p>
       </div>
 
-      <div className="space-y-4">
+      {/* Rider Timelines */}
+      <div className="space-y-5">
         {routes.map((route, rIdx) => (
-          <div key={rIdx} className="rounded-lg border border-slate-200 overflow-hidden">
-            <div className="bg-slate-50 px-3 py-2 border-b border-slate-200 flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-700">
-                Rider {rIdx + 1} — Departs {route.departureTime}
+          <div key={rIdx} className="border border-[#DAD6CC] bg-[#FFFEFA]">
+            {/* Rider Header Bar */}
+            <div className="bg-[#F5F2EB] px-4 py-2.5 border-b border-[#DAD6CC] flex flex-wrap items-center justify-between text-xs font-mono">
+              <span className="font-bold text-[#242520]">
+                Rider {rIdx + 1} Itinerary (Departure: {route.departureTime} → Return: {route.returnTimeFormatted})
               </span>
-              <span className="text-[10px] text-slate-400 font-mono">
-                {route.orderedStops.length} stops · {route.totalDistance} units
+              <span className="text-[#77766F]">
+                Load: <strong>{route.totalPackages}/{route.capacity} pkgs</strong> | Route Distance: <strong>{route.totalDistance} units</strong>
               </span>
             </div>
 
-            <div className="divide-y divide-slate-100">
-              {route.legs.map(leg => {
+            {/* Steps List */}
+            <div className="divide-y divide-[#DAD6CC]">
+              {route.legs.map((leg) => {
                 const isLate = leg.status === 'LATE';
+                const hasWait = leg.waitMinutes > 0;
+
                 return (
-                  <div key={leg.stop_id} className={`p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${isLate ? 'bg-red-50' : 'hover:bg-slate-50'}`}>
-                    <div className="flex items-start gap-3">
-                      <div className={`w-7 h-7 rounded flex items-center justify-center text-[10px] font-bold shrink-0 ${
-                        isLate ? 'bg-red-100 text-red-700' : 'bg-indigo-50 text-indigo-700'
+                  <div
+                    key={leg.stop_id}
+                    className={`p-3 text-xs font-mono flex flex-col md:flex-row md:items-center justify-between gap-2 ${
+                      isLate ? 'bg-[#FCECEB]' : 'hover:bg-[#F5F2EB]/50'
+                    }`}
+                  >
+                    {/* Left: Stop Info & Explanation */}
+                    <div className="flex items-start md:items-center space-x-3">
+                      <div className={`w-7 h-7 border flex items-center justify-center font-bold text-xs shrink-0 ${
+                        isLate
+                          ? 'border-[#B83C32] bg-[#B83C32] text-[#FFFEFA]'
+                          : 'border-[#242520] bg-[#242520] text-[#FFFEFA]'
                       }`}>
                         {leg.stop_id}
                       </div>
+
                       <div>
-                        <div className="flex flex-wrap items-center gap-1.5 text-xs">
-                          <span className="font-semibold text-slate-900">{leg.stop_id}</span>
-                          <span className="text-slate-400 font-mono text-[10px]">({leg.to.x},{leg.to.y}) · {leg.stop.packages}p</span>
-                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold ${
-                            isLate ? 'bg-red-100 text-red-700' : 'bg-emerald-50 text-emerald-700'
+                        <div className="flex items-center space-x-2">
+                          <span className="font-bold text-[#242520] text-sm">{leg.stop_id}</span>
+                          <span className="text-[#77766F]">
+                            Coord ({leg.to.x}, {leg.to.y}) • {leg.stop.packages} pkg(s)
+                          </span>
+                          <span className={`px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider ${
+                            isLate ? 'bg-[#B83C32] text-[#FFFEFA]' : 'bg-[#EAE6DC] text-[#287653]'
                           }`}>
-                            {leg.status}{isLate ? ` +${Math.round(leg.minutesLate)}m` : ''}
+                            {leg.status} {isLate ? `(+${Math.round(leg.minutesLate)}m)` : ''}
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-500 mt-0.5">{leg.explanation}</p>
+                        <p className="text-[11px] font-sans text-[#77766F] mt-0.5">
+                          {leg.explanation}
+                        </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4 text-[10px] font-mono text-slate-500 shrink-0">
-                      <div className="text-center">
-                        <div className="text-[9px] text-slate-400 uppercase">Arrived</div>
-                        <div className="font-semibold text-slate-700">{leg.rawArrivalTimeFormatted}</div>
+
+                    {/* Right: Timeline Matrix */}
+                    <div className="flex items-center space-x-4 text-[11px] text-[#77766F] tabular-nums shrink-0">
+                      <div>
+                        <div className="text-[10px] uppercase">Arrival</div>
+                        <div className="font-bold text-[#242520]">{leg.rawArrivalTimeFormatted}</div>
                       </div>
-                      {leg.waitMinutes > 0 && (
-                        <div className="text-center">
-                          <div className="text-[9px] text-amber-500 uppercase">Wait</div>
-                          <div className="font-semibold text-amber-600">{leg.waitMinutes}m</div>
+                      {hasWait && (
+                        <div>
+                          <div className="text-[10px] uppercase text-[#A76718]">Wait</div>
+                          <div className="font-bold text-[#A76718]">{leg.waitMinutes}m</div>
                         </div>
                       )}
-                      <div className="text-center">
-                        <div className="text-[9px] text-slate-400 uppercase">Service</div>
-                        <div className="font-semibold text-slate-700">{leg.serviceStartTimeFormatted}–{leg.serviceEndTimeFormatted}</div>
+                      <div>
+                        <div className="text-[10px] uppercase">Service</div>
+                        <div className="font-bold text-[#242520]">
+                          {leg.serviceStartTimeFormatted}–{leg.serviceEndTimeFormatted}
+                        </div>
                       </div>
-                      <div className="text-center">
-                        <div className="text-[9px] text-slate-400 uppercase">Deadline</div>
-                        <div className={`font-semibold ${isLate ? 'text-red-600' : 'text-slate-700'}`}>{leg.windowEnd}</div>
+                      <div>
+                        <div className="text-[10px] uppercase">Deadline</div>
+                        <div className="font-bold text-[#242520]">{leg.windowEnd}</div>
                       </div>
                     </div>
                   </div>
                 );
               })}
 
-              <div className="px-4 py-2 bg-slate-50 flex items-center justify-between text-[10px] font-mono text-slate-400 border-t border-slate-200">
-                <span>↩ Return to Depot · {route.returnDistance} units</span>
-                <span>Closed at <span className="font-semibold text-slate-600">{route.returnTimeFormatted}</span></span>
+              {/* Closed-route Return Leg */}
+              <div className="p-3 bg-[#F5F2EB] text-xs font-mono flex items-center justify-between text-[#77766F]">
+                <div>
+                  <strong className="text-[#242520]">Closed Return to Depot:</strong> Final leg adds {route.returnDistance} units from last stop back to (0,0).
+                </div>
+                <div>
+                  Returned at <strong className="text-[#242520]">{route.returnTimeFormatted}</strong>
+                </div>
               </div>
             </div>
           </div>
         ))}
 
+        {/* Unassigned stops notice */}
         {unassigned.length > 0 && (
-          <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
-            <h4 className="text-xs font-semibold text-amber-800 mb-2 flex items-center gap-1.5">
-              <AlertTriangle className="w-3.5 h-3.5" />
+          <div className="border border-[#A76718] bg-[#FDF6ED] p-3 text-xs font-mono">
+            <h4 className="font-bold text-[#A76718] uppercase tracking-wider mb-1.5">
               Unassigned Deliveries ({unassigned.length})
             </h4>
             <div className="space-y-1">
-              {unassigned.map(u => (
-                <div key={u.stop_id} className="flex items-center justify-between bg-white rounded border border-amber-200 px-3 py-2 text-xs">
-                  <div>
-                    <span className="font-semibold text-slate-800 font-mono mr-2">{u.stop_id}</span>
-                    <span className="text-slate-500">{u.reason}</span>
-                  </div>
-                  <span className="text-[10px] font-semibold text-amber-700 bg-amber-100 px-2 py-0.5 rounded">EXCLUDED</span>
+              {unassigned.map((u) => (
+                <div key={u.stop_id} className="flex justify-between">
+                  <span><strong>{u.stop_id}:</strong> {u.reason}</span>
+                  <span className="text-[10px] uppercase font-bold text-[#A76718]">EXCLUDED</span>
                 </div>
               ))}
             </div>
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 }

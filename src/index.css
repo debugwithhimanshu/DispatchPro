@@ -4,14 +4,23 @@
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 font-sans antialiased;
+    background-color: #F5F2EB;
+    color: #242520;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+}
+
+/* Swiss Editorial Utilities */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }
 
 @media print {
   body {
-    background: white !important;
-    color: black !important;
+    background: #ffffff !important;
+    color: #000000 !important;
   }
   .no-print {
     display: none !important;

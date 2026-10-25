@@ -1,17 +1,24 @@
 import React, { useState, useMemo } from 'react';
 import Header from './components/Header.jsx';
+import HeroSection from './components/HeroSection.jsx';
 import DashboardStats from './components/DashboardStats.jsx';
-import StopsEditor from './components/StopsEditor.jsx';
-import ScenarioControls from './components/ScenarioControls.jsx';
-import StrategyComparison from './components/StrategyComparison.jsx';
 import RouteMap from './components/RouteMap.jsx';
+import OperationsPanel from './components/OperationsPanel.jsx';
+import StrategyComparison from './components/StrategyComparison.jsx';
 import StopTimeline from './components/StopTimeline.jsx';
-import AlertsPanel from './components/AlertsPanel.jsx';
+import StopsEditor from './components/StopsEditor.jsx';
 import ManualSimulator from './components/ManualSimulator.jsx';
 import TestRunner from './components/TestRunner.jsx';
 import DispatchPrintSheet from './components/DispatchPrintSheet.jsx';
 
-import { INITIAL_STOPS, DEFAULT_CAPACITY, DEFAULT_DEPARTURE_TIME, DEFAULT_SERVICE_TIME, DEFAULT_SPEED, DEFAULT_RIDERS } from './data/sampleStops.js';
+import {
+  INITIAL_STOPS,
+  DEFAULT_CAPACITY,
+  DEFAULT_DEPARTURE_TIME,
+  DEFAULT_SERVICE_TIME,
+  DEFAULT_SPEED,
+  DEFAULT_RIDERS
+} from './data/sampleStops.js';
 import { optimizeRoutes, applyFailedStops, validateStops } from './utils/optimizer.js';
 
 export default function App() {
@@ -21,7 +28,7 @@ export default function App() {
   const [currentScenario, setCurrentScenario] = useState('A');
   const [failedStopIds, setFailedStopIds] = useState(new Set());
 
-  // Configuration settings
+  // Fleet operational configuration
   const [config, setConfig] = useState({
     riderCount: DEFAULT_RIDERS,
     capacity: DEFAULT_CAPACITY,
@@ -34,7 +41,7 @@ export default function App() {
     setConfig(prev => ({ ...prev, [key]: value }));
   };
 
-  // Toggle stop failed
+  // Toggle stop failure
   const handleToggleFailed = (stopId) => {
     setFailedStopIds(prev => {
       const next = new Set(prev);
@@ -47,7 +54,7 @@ export default function App() {
     });
   };
 
-  // Filter out failed stops for planning
+  // Filter out failed stops
   const { activeStops, failedStops } = useMemo(() => {
     return applyFailedStops(stops, failedStopIds);
   }, [stops, failedStopIds]);
@@ -57,7 +64,7 @@ export default function App() {
     return validateStops(stops);
   }, [stops]);
 
-  // Live Optimization Computation
+  // Reactive Optimization Computation
   const optimizationResult = useMemo(() => {
     if (!validation.valid) {
       return {
@@ -79,13 +86,13 @@ export default function App() {
     });
   }, [activeStops, config, validation]);
 
-  // Active Strategy Data
+  // Selected Strategy Object
   const selectedStrategyData = useMemo(() => {
     if (!optimizationResult || !optimizationResult.isValid) return null;
     return optimizationResult[selectedStrategy] || optimizationResult.optimal;
   }, [optimizationResult, selectedStrategy]);
 
-  // Table edit handlers
+  // Stop row edit handlers
   const handleUpdateStop = (index, field, value) => {
     setStops(prev => {
       const copy = [...prev];
@@ -162,15 +169,12 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F5F2EB] text-[#242520] flex flex-col font-sans selection:bg-[#F5E4DC] selection:text-[#C65332]">
+      {/* 1. Header & Navigation */}
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onRunAcceptanceTests={() => setActiveTab('tests')}
-        onPrintDispatch={() => setActiveTab('print')}
-        isExactMode={stops.length <= 8}
-        unassignedCount={selectedStrategyData?.metrics?.unassignedStops?.length || 0}
-        lateCount={selectedStrategyData?.metrics?.totalLateStops || 0}
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -201,52 +205,60 @@ export default function App() {
         {/* DASHBOARD / CONTROL CENTER TAB */}
         {activeTab === 'dashboard' && (
           <div className="no-print">
-            {/* Top Dashboard Metrics Row */}
+            {/* 2. Editorial Hero Section */}
+            <HeroSection
+              scenarioName={`Scenario ${currentScenario}`}
+              riderCount={config.riderCount}
+              activeStopsCount={activeStops.length}
+              onOptimize={() => {
+                setSelectedStrategy('optimal');
+              }}
+              onVerify={() => setActiveTab('tests')}
+            />
+
+            {/* 3. Four Key Operational Metrics */}
             <DashboardStats
               selectedStrategyData={selectedStrategyData}
               baselineData={optimizationResult?.baseline}
               improvement={optimizationResult?.improvement}
-              totalStopsCount={stops.length}
-              activeStopsCount={activeStops.length}
             />
 
-            {/* Presets & Parameters Bar */}
-            <ScenarioControls
-              config={config}
-              onUpdateConfig={handleUpdateConfig}
-              onLoadScenarioA={handleLoadScenarioA}
-              onLoadScenarioB={handleLoadScenarioB}
-              onLoadScenarioC={handleLoadScenarioC}
-              currentScenario={currentScenario}
-            />
+            {/* 4. Two-Column Workspace: Map (Left ~67%) + Operations Panel (Right ~33%) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-8 items-stretch">
+              {/* Left Column: Interactive Route Map */}
+              <div className="lg:col-span-8 flex flex-col">
+                <RouteMap
+                  stops={activeStops}
+                  strategyData={selectedStrategyData}
+                  selectedStrategy={selectedStrategy}
+                  onSelectStrategy={setSelectedStrategy}
+                />
+              </div>
 
-            {/* Real-time Alerts Panel */}
-            <AlertsPanel
-              optimizationResult={optimizationResult}
-              selectedStrategyData={selectedStrategyData}
-              validationErrors={validation.errors}
-              failedStops={failedStops}
-              stopsCount={stops.length}
-            />
-
-            {/* Main Interactive Grid Map & Strategy Comparison */}
-            <div className="grid grid-cols-1 gap-6 mb-6">
-              <RouteMap
-                stops={activeStops}
-                strategyData={selectedStrategyData}
-                selectedStrategy={selectedStrategy}
-                onSelectStrategy={setSelectedStrategy}
-              />
+              {/* Right Column: Operations Panel */}
+              <div className="lg:col-span-4 flex flex-col">
+                <OperationsPanel
+                  config={config}
+                  onUpdateConfig={handleUpdateConfig}
+                  onLoadScenarioA={handleLoadScenarioA}
+                  onLoadScenarioB={handleLoadScenarioB}
+                  onLoadScenarioC={handleLoadScenarioC}
+                  currentScenario={currentScenario}
+                  optimizationResult={optimizationResult}
+                  selectedStrategyData={selectedStrategyData}
+                  onOptimize={() => setSelectedStrategy('optimal')}
+                />
+              </div>
             </div>
 
-            {/* Strategy Comparison Cards (Baseline, NN, Optimal) */}
+            {/* 5. Three Strategies Comparison */}
             <StrategyComparison
               optimizationResult={optimizationResult}
               selectedStrategy={selectedStrategy}
               onSelectStrategy={setSelectedStrategy}
             />
 
-            {/* "Why This Route?" Decision & Timeline Panel */}
+            {/* 6. Why This Route? Decision & Timeline Matrix */}
             {selectedStrategyData && (
               <StopTimeline
                 strategyData={selectedStrategyData}
@@ -254,7 +266,7 @@ export default function App() {
               />
             )}
 
-            {/* Editable Stops Matrix Table */}
+            {/* 7. Delivery Stops Matrix (Editable Table) */}
             <StopsEditor
               stops={stops}
               onUpdateStop={handleUpdateStop}
@@ -270,11 +282,12 @@ export default function App() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="no-print bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
-        <p>
-          DispatchPro • Sobhasaria Hackfest 2026 Challenge H04 • Pure JavaScript Offline Route Optimizer
-        </p>
+      {/* Editorial Footer */}
+      <footer className="no-print bg-[#FFFEFA] border-t border-[#DAD6CC] py-4 text-center text-xs font-mono text-[#77766F]">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+          <span>DISPATCHPRO • SOBHASARIA HACKFEST 2026 / H04</span>
+          <span>SWISS EDITORIAL SYSTEM • PURE OFFLINE JAVASCRIPT SOLVER</span>
+        </div>
       </footer>
     </div>
   );

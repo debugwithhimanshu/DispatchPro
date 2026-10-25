@@ -1,126 +1,92 @@
-import React, { useState } from 'react';
-import { Truck, PlayCircle, Printer, LayoutDashboard, SlidersHorizontal, FlaskConical, Menu, X } from 'lucide-react';
-
-const NAV_ITEMS = [
-  { id: 'dashboard', label: 'Control Center', icon: LayoutDashboard },
-  { id: 'simulator', label: 'Simulator', icon: SlidersHorizontal },
-  { id: 'tests', label: 'Run Tests', icon: FlaskConical },
-  { id: 'print', label: 'Print Sheet', icon: Printer },
-];
+import React from 'react';
+import { PlayCircle, Printer } from 'lucide-react';
 
 export default function Header({
   activeTab,
   setActiveTab,
-  onRunAcceptanceTests,
-  isExactMode,
-  unassignedCount,
-  lateCount,
+  onRunAcceptanceTests
 }) {
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  const handleNav = (id) => { setActiveTab(id); setMobileOpen(false); };
-
   return (
-    <header className="no-print sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
+    <header className="no-print bg-[#FFFEFA] border-b border-[#DAD6CC] sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14 gap-4">
-
-          {/* Logo */}
-          <div className="flex items-center gap-3 flex-shrink-0">
-            <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center">
-              <Truck className="h-4 w-4 text-white" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-slate-900 tracking-tight">DispatchPro</span>
-                <span className="hidden sm:inline px-1.5 py-0.5 text-[10px] font-semibold rounded bg-slate-100 text-slate-500 border border-slate-200">
-                  H04
-                </span>
-                <span className={`hidden sm:inline px-1.5 py-0.5 text-[10px] font-semibold rounded border ${
-                  isExactMode
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                    : 'bg-amber-50 text-amber-700 border-amber-200'
-                }`}>
-                  {isExactMode ? 'Exact' : '2-Opt'}
-                </span>
+        <div className="flex items-center justify-between h-14">
+          {/* Left: Geometric Depot Symbol + Wordmark + H04 Badge */}
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2">
+              {/* Minimalist Swiss depot symbol */}
+              <div className="w-6 h-6 border-2 border-[#242520] flex items-center justify-center bg-[#FFFEFA]">
+                <div className="w-2 h-2 bg-[#C65332]" />
               </div>
-              <p className="hidden sm:block text-[10px] text-slate-400 leading-none mt-0.5">
-                Sobhasaria Hackfest 2026
-              </p>
+              <span className="font-bold text-base tracking-tight text-[#242520] font-sans">
+                DISPATCH<span className="font-light text-[#C65332]">PRO</span>
+              </span>
             </div>
+
+            <span className="hidden sm:inline-block text-[11px] font-mono uppercase tracking-wider px-2 py-0.5 border border-[#DAD6CC] text-[#77766F] bg-[#F5F2EB]">
+              H04 / Route Optimizer
+            </span>
+
+            <span className="hidden md:inline-flex items-center gap-1.5 text-[11px] font-mono text-[#287653] pl-2 border-l border-[#DAD6CC]">
+              <span className="w-1.5 h-1.5 bg-[#287653] inline-block" />
+              Offline Ready
+            </span>
           </div>
 
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-0.5">
-            {NAV_ITEMS.map(({ id, label, icon: Icon }) => {
-              const active = activeTab === id;
-              return (
-                <button
-                  key={id}
-                  onClick={() => handleNav(id)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-sm transition-colors ${
-                    active
-                      ? 'bg-slate-100 text-slate-900 font-semibold'
-                      : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-medium'
-                  }`}
-                >
-                  <Icon className="w-3.5 h-3.5" />
-                  {label}
-                </button>
-              );
-            })}
-          </nav>
+          {/* Center/Right: Navigation Tabs */}
+          <nav className="flex items-center space-x-1 sm:space-x-2 text-xs font-mono">
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className={`px-3 py-1.5 transition-colors uppercase tracking-wider text-[11px] font-semibold border-b-2 ${
+                activeTab === 'dashboard'
+                  ? 'border-[#C65332] text-[#C65332]'
+                  : 'border-transparent text-[#77766F] hover:text-[#242520]'
+              }`}
+            >
+              Control Center
+            </button>
+            <button
+              onClick={() => setActiveTab('simulator')}
+              className={`px-3 py-1.5 transition-colors uppercase tracking-wider text-[11px] font-semibold border-b-2 ${
+                activeTab === 'simulator'
+                  ? 'border-[#C65332] text-[#C65332]'
+                  : 'border-transparent text-[#77766F] hover:text-[#242520]'
+              }`}
+            >
+              Manual Simulator
+            </button>
+            <button
+              onClick={() => setActiveTab('tests')}
+              className={`px-3 py-1.5 transition-colors uppercase tracking-wider text-[11px] font-semibold border-b-2 ${
+                activeTab === 'tests'
+                  ? 'border-[#C65332] text-[#C65332]'
+                  : 'border-transparent text-[#77766F] hover:text-[#242520]'
+              }`}
+            >
+              Run Tests
+            </button>
+            <button
+              onClick={() => setActiveTab('print')}
+              className={`hidden sm:inline-flex items-center space-x-1 px-3 py-1.5 transition-colors uppercase tracking-wider text-[11px] font-semibold border-b-2 ${
+                activeTab === 'print'
+                  ? 'border-[#C65332] text-[#C65332]'
+                  : 'border-transparent text-[#77766F] hover:text-[#242520]'
+              }`}
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>Print Sheet</span>
+            </button>
 
-          {/* Right */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {lateCount > 0 && (
-              <span className="hidden sm:inline px-2 py-1 text-xs font-semibold rounded bg-red-50 text-red-600 border border-red-200">
-                {lateCount} Late
-              </span>
-            )}
-            <div className="hidden lg:flex items-center gap-1.5 text-xs text-slate-500">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
-              Offline
-            </div>
+            {/* Verify Engine Button */}
             <button
               onClick={onRunAcceptanceTests}
-              className="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-1.5 rounded-md transition-colors"
+              className="ml-2 inline-flex items-center space-x-1.5 bg-[#C65332] hover:bg-[#A94429] text-[#FFFEFA] text-[11px] font-mono uppercase tracking-wider font-semibold px-3 py-1.5 transition-colors"
             >
               <PlayCircle className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Verify Engine</span>
+              <span>Verify Engine</span>
             </button>
-            <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-            >
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
+          </nav>
         </div>
       </div>
-
-      {/* Mobile nav */}
-      {mobileOpen && (
-        <div className="md:hidden border-t border-slate-200 bg-white px-4 py-2">
-          {NAV_ITEMS.map(({ id, label, icon: Icon }) => {
-            const active = activeTab === id;
-            return (
-              <button
-                key={id}
-                onClick={() => handleNav(id)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-md text-sm transition-colors ${
-                  active
-                    ? 'bg-slate-100 text-slate-900 font-semibold'
-                    : 'text-slate-600 hover:bg-slate-50 font-medium'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                {label}
-              </button>
-            );
-          })}
-        </div>
-      )}
     </header>
   );
 }

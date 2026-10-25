@@ -537,12 +537,16 @@ export function buildOptimalSolution(stops = [], options = {}) {
       const perms = getPermutations(rStops);
       let bestRRoute = null;
 
+      // Lexicographical comparison:
+      // 1. Maximize totalAssignedPkgs
+      // 2. Minimize totalLate (late stops)
+      // 3. Minimize totalDist
       for (let p of perms) {
         const rRoute = calculateRoute(p, options);
         if (
           bestRRoute === null ||
-          rRoute.totalDistance < bestRRoute.totalDistance ||
-          (rRoute.totalDistance === bestRRoute.totalDistance && rRoute.lateStopsCount < bestRRoute.lateStopsCount)
+          rRoute.lateStopsCount < bestRRoute.lateStopsCount ||
+          (rRoute.lateStopsCount === bestRRoute.lateStopsCount && rRoute.totalDistance < bestRRoute.totalDistance)
         ) {
           bestRRoute = rRoute;
         }
@@ -556,12 +560,12 @@ export function buildOptimalSolution(stops = [], options = {}) {
 
     // Lexicographical comparison:
     // 1. Maximize totalAssignedPkgs
-    // 2. Minimize totalDist
-    // 3. Minimize totalLate
+    // 2. Minimize lateStops
+    // 3. Minimize distance
     const candidateScore = {
       assignedPackages: totalAssignedPkgs,
-      distance: totalDist,
       lateStops: totalLate,
+      distance: totalDist,
       routes: bestRiderRoutes,
       unassigned
     };
@@ -572,10 +576,10 @@ export function buildOptimalSolution(stops = [], options = {}) {
       if (candidateScore.assignedPackages > bestSolution.assignedPackages) {
         bestSolution = candidateScore;
       } else if (candidateScore.assignedPackages === bestSolution.assignedPackages) {
-        if (candidateScore.distance < bestSolution.distance) {
+        if (candidateScore.lateStops < bestSolution.lateStops) {
           bestSolution = candidateScore;
-        } else if (candidateScore.distance === bestSolution.distance) {
-          if (candidateScore.lateStops < bestSolution.lateStops) {
+        } else if (candidateScore.lateStops === bestSolution.lateStops) {
+          if (candidateScore.distance < bestSolution.distance) {
             bestSolution = candidateScore;
           }
         }

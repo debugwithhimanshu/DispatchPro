@@ -2,17 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Editorial Swiss Light Mode Tokens */
+  --color-bg: #F5F2EB;
+  --color-surface: #FFFEFA;
+  --color-surface-secondary: #F5F2EB;
+  --color-surface-elevated: #EAE6DC;
+  --color-text-primary: #242520;
+  --color-text-secondary: #77766F;
+  --color-text-muted: #96948B;
+  --color-border: #DAD6CC;
+  --color-accent: #C65332;
+  --color-accent-hover: #A94429;
+  --color-accent-bg: #F5E4DC;
+  --color-success: #287653;
+  --color-warning: #A76718;
+  --color-error: #B83C32;
+  --color-rider1: #C65332;
+  --color-rider2: #2A7A6E;
+  --color-map-bg: #22231F;
+  --color-map-grid: #353630;
+}
+
+html.dark {
+  /* Editorial Swiss Dark Mode Tokens */
+  --color-bg: #181916;
+  --color-surface: #22231F;
+  --color-surface-secondary: #2B2C27;
+  --color-surface-elevated: #30312B;
+  --color-text-primary: #F4F0E8;
+  --color-text-secondary: #C0BDB3;
+  --color-text-muted: #96948B;
+  --color-border: #414139;
+  --color-accent: #E27A55;
+  --color-accent-hover: #F08A65;
+  --color-accent-bg: #402A22;
+  --color-success: #65C49A;
+  --color-warning: #E7B464;
+  --color-error: #F08078;
+  --color-rider1: #E27A55;
+  --color-rider2: #48A89A;
+  --color-map-bg: #1D1E1A;
+  --color-map-grid: #2E2F29;
+}
+
 @layer base {
   body {
-    background-color: #F5F2EB;
-    color: #242520;
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
   }
 }
 
-/* Swiss Editorial Utilities */
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }

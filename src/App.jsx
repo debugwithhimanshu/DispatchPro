@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { ThemeProvider } from './context/ThemeContext.jsx';
 import Header from './components/Header.jsx';
 import HeroSection from './components/HeroSection.jsx';
 import DashboardStats from './components/DashboardStats.jsx';
@@ -21,7 +22,7 @@ import {
 } from './data/sampleStops.js';
 import { optimizeRoutes, applyFailedStops, validateStops } from './utils/optimizer.js';
 
-export default function App() {
+function MainApp() {
   const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'simulator' | 'tests' | 'print'
   const [stops, setStops] = useState(INITIAL_STOPS);
   const [selectedStrategy, setSelectedStrategy] = useState('optimal'); // 'baseline' | 'nearestNeighbor' | 'optimal'
@@ -169,7 +170,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F2EB] text-[#242520] flex flex-col font-sans selection:bg-[#F5E4DC] selection:text-[#C65332]">
+    <div className="min-h-screen bg-theme-bg text-theme-text flex flex-col font-sans transition-colors selection:bg-theme-accentBg selection:text-theme-accent">
       {/* 1. Header & Navigation */}
       <Header
         activeTab={activeTab}
@@ -283,12 +284,20 @@ export default function App() {
       </main>
 
       {/* Editorial Footer */}
-      <footer className="no-print bg-[#FFFEFA] border-t border-[#DAD6CC] py-4 text-center text-xs font-mono text-[#77766F]">
+      <footer className="no-print bg-theme-surface border-t border-theme-border py-4 text-center text-xs font-mono text-theme-muted transition-colors">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
           <span>DISPATCHPRO • SOBHASARIA HACKFEST 2026 / H04</span>
-          <span>SWISS EDITORIAL SYSTEM • PURE OFFLINE JAVASCRIPT SOLVER</span>
+          <span>SWISS EDITORIAL SYSTEM • LIGHT / DARK / AUTO MODES</span>
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <MainApp />
+    </ThemeProvider>
   );
 }

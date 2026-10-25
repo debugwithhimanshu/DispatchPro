@@ -258,35 +258,35 @@ export default function TestRunner({ currentStops = INITIAL_STOPS }) {
   const failedCount = (testResults?.length || 0) - passedCount;
 
   return (
-    <div className="border border-[#DAD6CC] bg-[#FFFEFA] p-6 mb-8 font-mono">
+    <div className="border border-theme-border bg-theme-surface p-6 mb-8 font-mono transition-colors">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-[#DAD6CC]">
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-theme-border">
         <div>
-          <div className="text-xs uppercase tracking-widest text-[#C65332] font-semibold mb-0.5">
+          <div className="text-xs uppercase tracking-widest text-theme-accent font-semibold mb-0.5">
             VERIFICATION / ACCEPTANCE CRITERIA
           </div>
-          <h2 className="text-2xl font-bold tracking-tight text-[#242520] font-sans">
+          <h2 className="text-2xl font-bold tracking-tight text-theme-text font-sans">
             Acceptance Test Suite
           </h2>
-          <p className="text-xs text-[#77766F] mt-0.5">
+          <p className="text-xs text-theme-muted mt-0.5">
             Live evaluation of all 12 H04 competition criteria directly against pure calculation functions.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <div className="flex items-center space-x-2 text-xs">
-            <span className="px-2.5 py-1 border border-[#287653] bg-[#EAE6DC] text-[#287653] font-bold">
+            <span className="px-2.5 py-1 border border-theme-success bg-theme-elevated text-theme-success font-bold">
               {passedCount} / {testResults?.length || 12} Passed
             </span>
             {failedCount > 0 && (
-              <span className="px-2.5 py-1 border border-[#B83C32] bg-[#FCECEB] text-[#B83C32] font-bold">
+              <span className="px-2.5 py-1 border border-theme-error bg-theme-accentBg text-theme-error font-bold">
                 {failedCount} Failed
               </span>
             )}
           </div>
           <button
             onClick={runAllTests}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#242520] hover:bg-[#353630] text-[#FFFEFA] text-xs font-bold uppercase tracking-wider"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-theme-text hover:opacity-90 text-theme-bg text-xs font-bold uppercase tracking-wider"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Run All Tests</span>
@@ -295,9 +295,9 @@ export default function TestRunner({ currentStops = INITIAL_STOPS }) {
       </div>
 
       {/* Tests Table */}
-      <div className="mt-4 overflow-x-auto border border-[#DAD6CC]">
+      <div className="mt-4 overflow-x-auto border border-theme-border">
         <table className="w-full text-left text-xs">
-          <thead className="bg-[#F5F2EB] text-[#77766F] uppercase border-b border-[#DAD6CC]">
+          <thead className="bg-theme-secondary text-theme-muted uppercase border-b border-theme-border">
             <tr>
               <th className="p-3 w-20 text-center">Status</th>
               <th className="p-3 w-56">Test Name</th>
@@ -306,22 +306,22 @@ export default function TestRunner({ currentStops = INITIAL_STOPS }) {
               <th className="p-3">Details</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#DAD6CC]">
+          <tbody className="divide-y divide-theme-border">
             {testResults?.map((test) => (
-              <tr key={test.id} className={test.passed ? 'hover:bg-[#F5F2EB]/50' : 'bg-[#FCECEB]'}>
+              <tr key={test.id} className={test.passed ? 'hover:bg-theme-secondary/50' : 'bg-theme-accentBg'}>
                 <td className="p-3 text-center">
                   <span className={`inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border ${
                     test.passed
-                      ? 'border-[#287653] bg-[#EAE6DC] text-[#287653]'
-                      : 'border-[#B83C32] bg-[#B83C32] text-[#FFFEFA]'
+                      ? 'border-theme-success bg-theme-elevated text-theme-success'
+                      : 'border-theme-error bg-theme-error text-theme-surface'
                   }`}>
                     {test.passed ? 'PASS' : 'FAIL'}
                   </span>
                 </td>
-                <td className="p-3 font-bold text-[#242520]">{test.name}</td>
-                <td className="p-3 text-[11px] text-[#77766F]">{test.expected}</td>
-                <td className="p-3 text-[11px] font-bold text-[#242520]">{test.observed}</td>
-                <td className="p-3 text-[11px] text-[#77766F]">{test.details}</td>
+                <td className="p-3 font-bold text-theme-text">{test.name}</td>
+                <td className="p-3 text-[11px] text-theme-muted">{test.expected}</td>
+                <td className="p-3 text-[11px] font-bold text-theme-text">{test.observed}</td>
+                <td className="p-3 text-[11px] text-theme-muted">{test.details}</td>
               </tr>
             ))}
           </tbody>

@@ -11,7 +11,7 @@ export default function DispatchPrintSheet({
   const metrics = strategyData?.metrics || {};
 
   return (
-    <div className="bg-[#FFFEFA] p-8 max-w-4xl mx-auto my-6 border border-[#DAD6CC] shadow-2xs font-mono print:m-0 print:p-0 print:border-none print:shadow-none">
+    <div className="bg-[#FFFEFA] text-[#242520] p-8 max-w-4xl mx-auto my-6 border border-[#DAD6CC] shadow-2xs font-mono print:m-0 print:p-0 print:border-none print:shadow-none">
       {/* Top Action Bar (hidden on print) */}
       <div className="no-print flex items-center justify-between pb-4 mb-6 border-b border-[#DAD6CC]">
         <button
@@ -31,7 +31,7 @@ export default function DispatchPrintSheet({
         </button>
       </div>
 
-      {/* Manifest Header */}
+      {/* Manifest Header (Always print-friendly white paper) */}
       <div className="border-b-2 border-[#242520] pb-4 mb-6">
         <div className="flex items-center justify-between">
           <div>
